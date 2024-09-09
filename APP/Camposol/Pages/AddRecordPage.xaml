@@ -1,0 +1,199 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<pages:BaseContentPage
+    x:Class="Camposol.Pages.AddRecordPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:extensions="clr-namespace:Camposol.Extensions"
+    xmlns:pages="clr-namespace:Camposol.Common.Pages;assembly=Camposol.Common"
+    xmlns:viewModels="clr-namespace:Camposol.ViewModels"
+    xmlns:xct="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+    x:DataType="viewModels:AddRecordViewModel"
+    xmlns:controls="clr-namespace:Camposol.CustomControls"
+    x:TypeArguments="viewModels:AddRecordViewModel" Shell.NavBarIsVisible="False" NavigationPage.HasNavigationBar="False">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <xct:InvertedBoolConverter x:Key="InvertedBoolConverter" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+    <StackLayout BackgroundColor="Transparent">
+
+        <StackLayout.Background>
+            <LinearGradientBrush EndPoint="0,1">
+                <GradientStop Offset="0.1" Color="#FC030303" />
+                <GradientStop Offset="1.0" Color="#262C32" />
+            </LinearGradientBrush>
+        </StackLayout.Background>
+
+        <ActivityIndicator
+            BackgroundColor="Transparent"
+            HorizontalOptions="CenterAndExpand"
+            IsRunning="true"
+            IsVisible="{Binding IsBusy}"
+            VerticalOptions="CenterAndExpand" />
+
+        <controls:CustomPickerWithFilter
+            IsVisible="{Binding IsVisibleSelectLote}"
+            Title="Seleccionar Lote"
+            VerticalOptions="Center"
+            Items="{Binding Lotes}"
+            OkSelectLoteCommand = "{Binding OkSelectLoteCommand}"
+            CancelSelectLoteCommand="{Binding CancelSelectLoteCommand}"
+            SelectedItem="{Binding SelectedLote, Mode=TwoWay}"/>
+
+        <Grid
+            Padding="20"
+            HorizontalOptions="FillAndExpand"
+            IsVisible="{Binding IsVisibleRecord}"
+            RowDefinitions="auto, auto,auto,*,*,*,auto"
+            VerticalOptions="FillAndExpand">
+
+            <Frame BackgroundColor="#61a60e"  Margin="0,10,0,10">
+                <StackLayout  >
+                <Button
+                    BackgroundColor="ForestGreen"
+                    FontAttributes="Bold"
+                    HorizontalOptions="FillAndExpand"
+                    Text="Seleccione lote"
+                    TextColor="Black"
+                    Margin="0,0,0,10"
+                    Command="{Binding SelectLoteCommand}"
+                    VerticalOptions="CenterAndExpand" />
+
+                    <BoxView HorizontalOptions="FillAndExpand" Color="Black" HeightRequest="1" VerticalOptions="End"/>
+
+                    <Label FontSize="18" TextColor="Black" Margin="0,0,0,3" HorizontalOptions="Center">
+                        <Label.FormattedText>
+                            <FormattedString>
+                                <Span Text="Lote: " />
+                                <Span Text="{Binding SelectedLote}" />
+                            </FormattedString>
+                        </Label.FormattedText>
+                    </Label>
+                    <BoxView HorizontalOptions="FillAndExpand" Color="Black" HeightRequest="1" VerticalOptions="End"/>
+                </StackLayout>
+            </Frame>
+            
+
+            <Frame
+                Grid.Row="1"
+                Margin="0,0,0,20"
+                Padding="0"
+                BackgroundColor="#61a60e">
+                <Entry
+                    x:Name="SelectedRowEntry"
+                    Keyboard="Numeric"
+                    MaxLength="2"
+                    TextChanged="SelectedRowEntry_TextChanged"
+                    Placeholder="Seleccione hilera"
+                    Margin="6,0,0,0"
+                    BackgroundColor="#61a60e"
+                    HorizontalOptions="FillAndExpand"
+                    Text="{Binding SelectedRow, Mode=TwoWay}"
+                    TextColor="Black"
+                    PlaceholderColor="Black"
+                    VerticalOptions="FillAndExpand" />
+            </Frame>
+
+            <Frame
+                Grid.Row="2"
+                Margin="0,0,0,100"
+                Padding="0"
+                BackgroundColor="#61a60e">
+                        <Entry
+                            x:Name="SelectedPlantEntry"
+                            Keyboard="Numeric"
+                            MaxLength="2"
+                            TextChanged="SelectedPlantEntry_TextChanged"
+                            Placeholder="Seleccione planta"
+                            Margin="6,0,0,0"
+                            BackgroundColor="#61a60e"
+                            HorizontalOptions="FillAndExpand"
+                            Text="{Binding SelectedPlant, Mode=TwoWay}"
+                            TextColor="Black"
+                            PlaceholderColor="Black"
+                            VerticalOptions="FillAndExpand" />
+            </Frame>
+
+            <Button
+                Grid.Row="3"
+                BackgroundColor="#61a60e"
+                Clicked="OnStartRecordTime"
+                Command="{Binding StartRecordCommand}"
+                CornerRadius="100"
+                FontSize="34"
+                HeightRequest="200"
+                HorizontalOptions="CenterAndExpand"
+                IsEnabled="{Binding IsEnableStarOrEndRecord}"
+                IsVisible="{Binding IsVisibleStartRecord}"
+                Text="Grabar"
+                VerticalOptions="EndAndExpand"
+                WidthRequest="200" />
+
+            <Button
+                x:Name="stopbutton"
+                Grid.Row="3"
+                BackgroundColor="Red"
+                Clicked="OnStopRecordTime"
+                Command="{Binding EndRecordCommand}"
+                CornerRadius="100"
+                FontSize="34"
+                HeightRequest="200"
+                HorizontalOptions="CenterAndExpand"
+                IsEnabled="{Binding IsEnableStarOrEndRecord}"
+                IsVisible="{Binding IsVisibleStartRecord, Converter={StaticResource InvertedBoolConverter}}"
+                Text="Detener"
+                VerticalOptions="EndAndExpand"
+                WidthRequest="200" />
+
+            <Label
+                x:Name="Timer"
+                Grid.Row="4"
+                FontSize="34"
+                HorizontalOptions="Center"
+                Text="{Binding Source={x:Reference Timer}, Path=Text, StringFormat='{0:00}:{1:00}:{2:00}'}"
+                TextColor="#61a60e"
+                VerticalOptions="Center" />
+
+            <HorizontalStackLayout
+                Grid.Row="5"
+                HorizontalOptions="Center"
+                IsVisible="{Binding IsVisibleCancelOrOKRecord}"
+                Spacing="10"
+                VerticalOptions="End">
+                <Button
+                    Padding="10,10,10,10"
+                    BackgroundColor="Red"
+                    Clicked="OnResetRecordTime"
+                    CornerRadius="18"
+                    FontSize="18"
+                    Text="Reiniciar"
+                    WidthRequest="150" />
+                <Button
+                    Padding="10,10,10,10"
+                    BackgroundColor="#61a60e"
+                    Command="{Binding OkRecordCommand}"
+                    CornerRadius="18"
+                    FontSize="18"
+                    Text="Guardar"
+                    WidthRequest="150" />
+
+
+            </HorizontalStackLayout>
+            <Button 
+                Margin="0,10,0,0" 
+                Text="Volver" 
+                TextColor="#61a60e"
+                Command="{Binding BackCommand}"
+                Grid.Row="6" 
+                CornerRadius="18"
+                WidthRequest="300" 
+                BackgroundColor="Yellow"
+                TextTransform="Uppercase"
+                FontAttributes="Bold"
+                FontSize="18"/>
+        </Grid>
+    </StackLayout>
+
+
+</pages:BaseContentPage>

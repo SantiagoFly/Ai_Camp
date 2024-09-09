@@ -1,0 +1,67 @@
+name: APP
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+    paths:
+     - 'APP/**'
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup Keystore File
+      run: |
+        echo "${{secrets.KEYSTORE_FILE}}" > myapp.keystore.asc
+        gpg -d --passphrase "${{secrets.KEYSTORE_PASSWORD_GPG}}" --batch myapp.keystore.asc > myapp.keystore
+      
+    - name: Set up .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x
+
+    - name: Install .NET MAUI
+      run: dotnet workload install maui
+
+    - name: Install dependencies
+      run: dotnet restore ./APP/Camposol/Camposol.csproj
+
+    - name: Build
+      run: dotnet build ./APP/Camposol/Camposol.csproj -c Release -f net8.0-android34.0 /p:AndroidSigningKeyStore=myapp.keystore /p:AndroidSigningKeyAlias=ghactionskey /p:AndroidSigningKeyPass="${{ secrets.KEYSTORE_PASSWORD }}" /p:AndroidSigningStorePass="${{ secrets.KEYSTORE_PASSWORD_ALIAS }}" --no-restore
+    
+    - name: Upload a Build Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        path: |
+          ./**/*.aab
+          ./**/*.apk
+  upload:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+  
+    - name: Download a Build Artifact
+      uses: actions/download-artifact@v4
+      with:
+        path: .
+
+    - name: List files
+      run: ls -R
+
+    - uses: actions/checkout@v4
+    - uses: bacongobbler/azure-blob-storage-upload@main
+      with:
+          source_dir: "./artifact/APP/Camposol/bin/Release/net8.0-android34.0"
+          container_name: apk-files
+          account_name: stcamposolpocpaltas
+          connection_string: ${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}
+          extra_args: '--pattern com.companyname.Camposol.apk'
+          overwrite: 'true'
+    

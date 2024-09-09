@@ -1,0 +1,222 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<pages:BaseContentPage
+    x:Class="Camposol.Pages.HomePage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:extensions="clr-namespace:Camposol.Extensions"
+    xmlns:models="clr-namespace:Camposol.Models;assembly=Camposol.Models"
+    xmlns:pages="clr-namespace:Camposol.Common.Pages;assembly=Camposol.Common"
+    xmlns:viewModels="clr-namespace:Camposol.ViewModels"
+    xmlns:xct="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+    Title="Inicio"
+    x:DataType="viewModels:HomeViewModel"
+    x:TypeArguments="viewModels:HomeViewModel"
+    NavigationPage.HasBackButton="False"
+    Shell.NavBarIsVisible="False">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <xct:InvertedBoolConverter x:Key="InvertedBoolConverter" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <StackLayout HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
+
+        <StackLayout.Background>
+            <LinearGradientBrush EndPoint="0,1">
+                <GradientStop Offset="0.1" Color="#FC030303" />
+                <GradientStop Offset="1.0" Color="#262C32" />
+            </LinearGradientBrush>
+        </StackLayout.Background>
+
+        <ActivityIndicator
+            BackgroundColor="Transparent"
+            HorizontalOptions="CenterAndExpand"
+            IsRunning="true"
+            IsVisible="{Binding IsBusy, Mode=TwoWay}"
+            VerticalOptions="CenterAndExpand" />
+
+        <Grid
+            HorizontalOptions="FillAndExpand"
+            IsVisible="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}, Mode=TwoWay}"
+            RowDefinitions="auto,auto,*,auto,auto,auto"
+            VerticalOptions="FillAndExpand">
+
+            <StackLayout Grid.Row="0" HorizontalOptions="FillAndExpand"  Orientation="Horizontal" Margin="0,20,0,0">
+                <Label
+                    Margin="30,0,0,0"
+                    FontAttributes="Bold"
+                    FontSize="24"
+                    HorizontalOptions="CenterAndExpand"
+                    SemanticProperties.HeadingLevel="Level1"
+                    Text="Grabaciones"
+                    TextColor="#61a60e" />
+
+                <ImageButton Source="settings.png" HeightRequest="30" HorizontalOptions="Center" VerticalOptions="Start" Clicked="AddSettingsClicked"/>
+            </StackLayout>
+           
+            <BoxView
+                Grid.Row="1"
+                Margin="10"
+                HeightRequest="2"
+                HorizontalOptions="Fill"
+                Color="#61a60e" />
+            
+            <CollectionView
+                Grid.Row="2"
+                Margin="10"
+                BackgroundColor="Transparent"
+                ItemsSource="{Binding Source={RelativeSource AncestorType={x:Type viewModels:HomeViewModel}}, Path=Recordings}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="models:Recording">
+                        <StackLayout>
+                            <Grid
+                                Margin="10,0,10,0"
+                                ColumnDefinitions="*,*,auto,auto"
+                                HorizontalOptions="FillAndExpand"
+                                RowDefinitions="auto,auto,auto"
+                                RowSpacing="10"
+                                VerticalOptions="Start">
+
+                                <Label
+                                    Grid.Row="0"
+                                    Grid.Column="1"
+                                    Margin="0,0,6,0"
+                                    FontAttributes="Bold"
+                                    TextColor="#61a60e">
+                                    <Label.FormattedText>
+                                        <FormattedString>
+                                            <Span Text="Fecha: " />
+                                            <Span Text="{Binding Date}" />
+                                        </FormattedString>
+                                    </Label.FormattedText>
+                                </Label>
+
+                                <Label
+                                    Grid.Row="1"
+                                    Grid.Column="1"
+                                    Margin="0,0,6,0"
+                                    FontAttributes="Bold"
+                                    TextColor="#61a60e">
+                                    <Label.FormattedText>
+                                        <FormattedString>
+                                            <Span Text="Duracion: " />
+                                            <Span Text="{Binding Duration}" />
+                                            <Span Text="s" />
+                                        </FormattedString>
+                                    </Label.FormattedText>
+                                </Label>
+
+                                <VerticalStackLayout Spacing="10" Grid.Row="0" Grid.Column="0" Grid.RowSpan="3">
+                                    <Label
+                                        Margin="0,0,6,0"
+                                        FontSize="18"
+                                        FontAttributes="Bold"
+                                        TextColor="#61a60e">
+                                        <Label.FormattedText>
+                                            <FormattedString>
+                                                <Span Text="Lote: " />
+                                                <Span Text="{Binding Lote}" />
+                                            </FormattedString>
+                                        </Label.FormattedText>
+                                    </Label>
+
+                                    <Label
+                                        Margin="0,0,6,0"
+                                        FontAttributes="Bold"
+                                        FontSize="18"
+                                        TextColor="#61a60e">
+                                        <Label.FormattedText>
+                                            <FormattedString>
+                                                <Span Text="Hilera: " />
+                                                <Span Text="{Binding Row}" />
+                                            </FormattedString>
+                                        </Label.FormattedText>
+                                    </Label>
+
+                                    <Label
+                                        Margin="0,0,6,0"
+                                        FontAttributes="Bold"
+                                        FontSize="18"
+                                        TextColor="#61a60e">
+                                        <Label.FormattedText>
+                                            <FormattedString>
+                                                <Span Text="Planta: " />
+                                                <Span Text="{Binding Plant}" />
+                                            </FormattedString>
+                                        </Label.FormattedText>
+                                    </Label>
+                                </VerticalStackLayout>
+
+                                <Image
+                                    Grid.Row="0"
+                                    Grid.RowSpan="2"
+                                    Grid.Column="2"
+                                    Margin="0,0,10,0"
+                                    HeightRequest="25"
+                                    HorizontalOptions="End"
+                                    IsVisible="{Binding Sended, Mode=TwoWay}"
+                                    Source="Check"
+                                    VerticalOptions="CenterAndExpand"
+                                    WidthRequest="25" />
+
+                                <ImageButton
+                                    Grid.Row="0"
+                                    Grid.Column="3"
+                                    Margin="0,0,0,0"
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type viewModels:HomeViewModel}}, Path=SendRecordCommand}"
+                                    CommandParameter="{Binding .}"
+                                    HeightRequest="45"
+                                    Source="upload_record.png"
+                                    WidthRequest="45" />
+
+                                <ImageButton
+                                    Grid.Row="1"
+                                    Grid.Column="3"
+                                    Margin="0,0,0,0"
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type viewModels:HomeViewModel}}, Path=RemoveRecordCommand}"
+                                    CommandParameter="{Binding .}"
+                                    HeightRequest="45"
+                                    Source="delete_record.png"
+                                    WidthRequest="45" />
+
+                            </Grid>
+                            <BoxView
+                                Grid.Row="3"
+                                Margin="10"
+                                HeightRequest="0.5"
+                                HorizontalOptions="Fill"
+                                Color="#61a60e" />
+                        </StackLayout>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+                <CollectionView.EmptyView>
+                    <Label
+                        FontSize="20"
+                        HorizontalOptions="Center"
+                        Text="No hay grabaciones"
+                        TextColor="#61a60e"
+                        VerticalOptions="CenterAndExpand" />
+                </CollectionView.EmptyView>
+            </CollectionView>
+            <Button IsVisible="{Binding IsVisibleSendAll}" Margin="20,0,20,10" HorizontalOptions="CenterAndExpand" BackgroundColor="Transparent" Text="Enviar Todo" TextColor="#61a60e" Grid.Row="3" BorderColor="#61a60e" BorderWidth="1" 
+                    Command="{Binding Source={RelativeSource AncestorType={x:Type viewModels:HomeViewModel}}, Path=SendAllRecordCommand}"/>
+
+            <BoxView
+                Grid.Row="4"
+                Margin="10"
+                HeightRequest="2"
+                HorizontalOptions="Fill"
+                Color="#61a60e" />
+            <Button
+                Grid.Row="5"
+                Margin="0,10,0,20"
+                Command="{Binding Source={RelativeSource AncestorType={x:Type viewModels:HomeViewModel}}, Path=NewRecordCommand}"
+                HorizontalOptions="Center"
+                Text="Nueva Grabacion"
+                TextColor="Black" />
+        </Grid>
+    </StackLayout>
+
+
+</pages:BaseContentPage>

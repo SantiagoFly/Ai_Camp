@@ -1,0 +1,26 @@
+name: Sonarqube-Analysis-Backend
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+     - 'Backend/**'
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    permissions: read-all
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+      - uses: sonarsource/sonarqube-scan-action@master
+        with:
+          projectBaseDir: Backend
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_BACKEND }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL_APP }}
+          
